@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soft Glass Study Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <div id="alert-banner" class="alert-banner hidden">
+            <span id="alert-text"></span>
+            <button id="alert-close" aria-label="ปิด">x</button>
+        </div>
+
+        <header>
+            <div class="header-top">
+                <h1>Study Tracker</h1>
+                <div class="header-actions">
+                    <button id="notif-btn" class="theme-btn" title="เปิดการแจ้งเตือน" aria-label="เปิดการแจ้งเตือน">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </button>
+                    <button id="export-btn" class="theme-btn" title="สำรองข้อมูล" aria-label="สำรองข้อมูล">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </button>
+                    <button id="import-btn" class="theme-btn" title="กู้คืนข้อมูล" aria-label="กู้คืนข้อมูล">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    </button>
+                    <button id="theme-toggle" class="theme-btn" aria-label="สลับธีม">
+                        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </button>
+                </div>
+            </div>
+            <p id="date-display"></p>
+        </header>
+
+        <input type="file" id="import-file" accept="application/json" class="hidden">
+
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="todos">งาน</button>
+            <button class="tab-btn" data-tab="assignments">ส่งงาน</button>
+            <button class="tab-btn" data-tab="calendar">ปฏิทิน</button>
+            <button class="tab-btn" data-tab="stats">สถิติ</button>
+        </nav>
+
+        <!-- ============ TAB: TODOS ============ -->
+        <section id="panel-todos" class="tab-panel active">
+            <input type="text" id="todo-search" class="search-input" placeholder="ค้นหารายการ...">
+            <div class="input-group">
+                <input type="text" id="todo-input" placeholder="มีอะไรต้องทำบ้าง..." autocomplete="off">
+                <button id="add-btn" aria-label="เพิ่มรายการ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+            </div>
+
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">ทั้งหมด <span class="count-badge" data-count="all">0</span></button>
+                <button class="filter-btn" data-filter="active">กำลังทำ <span class="count-badge" data-count="active">0</span></button>
+                <button class="filter-btn" data-filter="completed">เสร็จแล้ว <span class="count-badge" data-count="completed">0</span></button>
+            </div>
+
+            <ul id="todo-list"></ul>
+
+            <div id="todo-empty" class="empty-state hidden">
+                <p>ยังไม่มีรายการที่ต้องทำ</p>
+                <span>เพิ่มรายการแรกของคุณได้เลย</span>
+            </div>
+
+            <div class="footer">
+                <span id="items-left">0 รายการเหลืออยู่</span>
+                <button id="clear-completed">ล้างรายการที่เสร็จแล้ว</button>
+            </div>
+        </section>
+
+        <!-- ============ TAB: ASSIGNMENTS ============ -->
+        <section id="panel-assignments" class="tab-panel">
+            <div class="assign-toolbar">
+                <div class="toolbar-row">
+                    <button id="open-assignment-modal" class="primary-btn">เพิ่มงานส่ง</button>
+                    <input type="text" id="ass-search" class="search-input" placeholder="ค้นหางาน/วิชา...">
+                </div>
+                <div class="assign-filters">
+                    <select id="filter-subject" class="filter-select">
+                        <option value="all">ทุกวิชา</option>
+                    </select>
+                    <select id="filter-type" class="filter-select">
+                        <option value="all">ทุกประเภท</option>
+                        <option value="homework">การบ้าน</option>
+                        <option value="project">โครงงาน</option>
+                        <option value="exam">ข้อสอบ</option>
+                        <option value="activity">กิจกรรม</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="assignment-list"></div>
+
+            <div id="assign-empty" class="empty-state hidden">
+                <p>ยังไม่มีงานส่ง</p>
+                <span>เพิ่มงานส่งและติดตามกำหนดเวลาได้ที่นี่</span>
+            </div>
+        </section>
+
+        <!-- ============ TAB: CALENDAR ============ -->
+        <section id="panel-calendar" class="tab-panel">
+            <div class="cal-view-toggle">
+                <button class="view-btn active" data-view="month">เดือน</button>
+                <button class="view-btn" data-view="timetable">ตารางเรียน</button>
+            </div>
+
+            <div id="cal-month-view">
+                <div class="calendar-header">
+                    <button id="prev-month" class="icon-btn nav-arrow">&#8249;</button>
+                    <h2 id="calendar-title"></h2>
+                    <button id="next-month" class="icon-btn nav-arrow">&#8250;</button>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span>
+                </div>
+                <div id="calendar-grid" class="calendar-grid"></div>
+                <div id="day-details" class="day-details"></div>
+            </div>
+
+            <div id="cal-timetable-view" class="hidden">
+                <div class="tt-toolbar">
+                    <select id="tt-subject" class="filter-select"></select>
+                    <select id="tt-day" class="filter-select">
+                        <option value="1">จันทร์</option>
+                        <option value="2">อังคาร</option>
+                        <option value="3">พุธ</option>
+                        <option value="4">พฤหัสบดี</option>
+                        <option value="5">ศุกร์</option>
+                        <option value="6">เสาร์</option>
+                        <option value="0">อาทิตย์</option>
+                    </select>
+                    <input type="time" id="tt-start" class="filter-select">
+                    <input type="time" id="tt-end" class="filter-select">
+                    <button id="tt-add" class="primary-btn">เพิ่มคาบ</button>
+                </div>
+                <div id="timetable-list"></div>
+            </div>
+        </section>
+
+        <!-- ============ TAB: STATS ============ -->
+        <section id="panel-stats" class="tab-panel">
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <span id="stat-total" class="stat-num">0</span>
+                    <label>งานทั้งหมด</label>
+                </div>
+                <div class="stat-card">
+                    <span id="stat-done" class="stat-num stat-green">0</span>
+                    <label>ส่งแล้ว</label>
+                </div>
+                <div class="stat-card">
+                    <span id="stat-overdue" class="stat-num stat-red">0</span>
+                    <label>เลยกำหนด</label>
+                </div>
+                <div class="stat-card">
+                    <span id="stat-ontime" class="stat-num">0%</span>
+                    <label>อัตราส่ง</label>
+                </div>
+            </div>
+
+            <h3 class="stat-heading">งานต่อวิชา</h3>
+            <div id="chart-subjects" class="chart"></div>
+
+            <h3 class="stat-heading">ภาระงาน 4 สัปดาห์ข้างหน้า</h3>
+            <div id="chart-weeks" class="chart"></div>
+
+            <h3 class="stat-heading">บันทึกคะแนน</h3>
+            <div class="grade-form">
+                <select id="grade-subject" class="filter-select"></select>
+                <input type="text" id="grade-title" class="search-input" placeholder="ชื่อรายการ เช่น สอบกลางภาค">
+                <input type="number" id="grade-score" class="search-input" min="0" step="0.5" placeholder="คะแนนที่ได้">
+                <input type="number" id="grade-max" class="search-input" min="1" step="0.5" placeholder="คะแนนเต็ม">
+                <button id="grade-add" class="primary-btn">เพิ่ม</button>
+            </div>
+            <div id="grades-summary"></div>
+        </section>
+    </div>
+
+    <!-- ============ ASSIGNMENT MODAL ============ -->
+    <div id="assignment-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="assignment-modal-title">เพิ่มงานส่ง</h3>
+                <button class="icon-btn modal-close" data-close="assignment-modal" aria-label="ปิด">x</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label for="ass-subject">วิชา</label>
+                    <div class="subject-select-row">
+                        <select id="ass-subject"></select>
+                        <button id="manage-subjects-btn" class="secondary-btn">จัดการวิชา</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="ass-title">ชื่องาน</label>
+                    <input type="text" id="ass-title" placeholder="เช่น แบบฝึกหัดบทที่ 3">
+                </div>
+                <div class="form-row two-col">
+                    <div>
+                        <label for="ass-date">วันส่ง</label>
+                        <input type="date" id="ass-date">
+                    </div>
+                    <div>
+                        <label for="ass-time">เวลา (ไม่บังคับ)</label>
+                        <input type="time" id="ass-time">
+                    </div>
+                </div>
+                <div class="form-row two-col">
+                    <div>
+                        <label for="ass-type">ประเภทงาน</label>
+                        <select id="ass-type">
+                            <option value="homework">การบ้าน</option>
+                            <option value="project">โครงงาน</option>
+                            <option value="exam">ข้อสอบ</option>
+                            <option value="activity">กิจกรรม</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="ass-repeat">ทำซ้ำ</label>
+                        <select id="ass-repeat">
+                            <option value="none">ไม่ซ้ำ</option>
+                            <option value="daily">รายวัน</option>
+                            <option value="weekly">รายสัปดาห์</option>
+                            <option value="monthly">รายเดือน</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>งานย่อย (Subtask)</label>
+                    <div class="subtask-add-row">
+                        <input type="text" id="ass-subtask-input" placeholder="เพิ่มงานย่อย...">
+                        <button id="ass-subtask-add" class="secondary-btn">เพิ่ม</button>
+                    </div>
+                    <ul id="ass-subtask-list" class="subtask-list"></ul>
+                </div>
+                <div class="form-row">
+                    <label for="ass-notes">หมายเหตุ</label>
+                    <textarea id="ass-notes" rows="2" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+                </div>
+                <div class="form-row">
+                    <label>รูปภาพ (ไม่บังคับ)</label>
+                    <input type="file" id="ass-image" accept="image/*">
+                    <div id="ass-image-preview" class="image-preview hidden">
+                        <img id="ass-image-img" alt="ภาพตัวอย่าง">
+                        <button id="ass-image-remove" class="secondary-btn">ลบรูป</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" data-close="assignment-modal">ยกเลิก</button>
+                <button id="save-assignment" class="primary-btn">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SUBJECT MODAL ============ -->
+    <div id="subject-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>จัดการวิชา</h3>
+                <button class="icon-btn modal-close" data-close="subject-modal" aria-label="ปิด">x</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label for="subject-name">ชื่อวิชา</label>
+                    <div class="subject-add-row">
+                        <input type="text" id="subject-name" placeholder="เช่น คณิตศาสตร์">
+                        <button id="add-subject-btn" class="primary-btn">เพิ่ม</button>
+                        <button id="subject-cancel-edit" class="secondary-btn hidden">ยกเลิก</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>สีประจำวิชา</label>
+                    <div id="color-palette" class="color-palette"></div>
+                </div>
+                <ul id="subject-list" class="subject-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
